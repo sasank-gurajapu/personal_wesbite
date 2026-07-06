@@ -5,7 +5,7 @@ export default function Home() {
   const [photoFound, setPhotoFound] = useState(true)
 
   return (
-    <div className="content">
+    <div className="content home-content">
       <div className="hero">
         {photoFound ? (
           <img
