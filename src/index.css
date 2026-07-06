@@ -6,6 +6,11 @@ html, body, #root {
   height: 100%;
 }
 
+:root {
+  --accent: #f5a623;
+  --accent-hover: #f7b84d;
+}
+
 body {
   margin: 0;
   background-color: #141414;
@@ -224,9 +229,9 @@ a:hover {
 }
 
 .section-row:hover .section-arrow {
-  background-color: #f2f2f2;
+  background-color: var(--accent);
   color: #141414;
-  border-color: #f2f2f2;
+  border-color: var(--accent);
 }
 
 .back-link {
@@ -283,9 +288,16 @@ a:hover {
 
 .education-item {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 6px 10px;
+  align-items: center;
+  gap: 14px;
+}
+
+.education-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 2px;
 }
 
 .education-school {
@@ -299,7 +311,7 @@ a:hover {
 }
 
 .education-dates {
-  margin-left: auto;
+  flex-shrink: 0;
   color: #888;
   font-size: 0.9rem;
   white-space: nowrap;
@@ -309,111 +321,189 @@ a:hover {
   margin-top: 56px;
 }
 
-.timeline {
+.resume-cta {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background-color: var(--accent);
+  color: #141414;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-bottom: none;
+}
+
+.resume-cta:hover {
+  background-color: var(--accent-hover);
+  border-bottom: none;
+}
+
+.page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.page-title-row .page-title {
+  margin-bottom: 0;
+}
+
+.htimeline {
+  user-select: none;
+}
+
+.htimeline-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.htimeline-hint {
+  font-size: 0.8rem;
+  color: #666;
+  font-style: italic;
+}
+
+.htimeline-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.htimeline-nav button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #1c1c1c;
+  border: 1px solid #2c2c2c;
+  color: #e4e4e4;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.htimeline-nav button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.htimeline-frame {
   position: relative;
 }
 
-.timeline-line {
+.htimeline-playhead {
   position: absolute;
-  top: 8px;
-  bottom: 8px;
-  left: 130px;
+  top: 0;
+  bottom: 0;
   width: 2px;
+  background-color: var(--accent);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.htimeline-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  cursor: grab;
+  border-top: 1px solid #2c2c2c;
+  border-bottom: 1px solid #2c2c2c;
+}
+
+.htimeline-viewport:active {
+  cursor: grabbing;
+}
+
+.htimeline-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.htimeline-track {
+  position: relative;
+  height: 118px;
+}
+
+.htimeline-ruler-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 72px;
+  height: 1px;
   background-color: #2c2c2c;
 }
 
-.timeline-line-fill {
+.htimeline-year {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 2px;
-  background-color: #f2f2f2;
-  transition: height 300ms ease;
-}
-
-.timeline-row {
-  position: relative;
-  display: grid;
-  grid-template-columns: 96px 28px 1fr;
-  column-gap: 20px;
-  padding: 26px 0;
-}
-
-.timeline-row:not(:last-child) {
-  border-bottom: 1px dashed #2c2c2c;
-}
-
-.timeline-time {
-  padding-top: 3px;
-  text-align: right;
+  top: 22px;
+  transform: translateX(-50%);
   font-size: 0.8rem;
-  color: #777;
-  transition: color 200ms ease;
+  color: #888;
+  white-space: nowrap;
 }
 
-.timeline-time-active {
-  color: #f2f2f2;
+.htimeline-year-present {
+  color: var(--accent);
   font-weight: 600;
 }
 
-.timeline-dot-wrap {
-  display: flex;
-  justify-content: center;
-  padding-top: 3px;
+.htimeline-tick {
+  position: absolute;
+  top: 62px;
+  width: 1px;
+  height: 20px;
+  background-color: #3a3a3a;
 }
 
-.timeline-dot {
-  width: 13px;
-  height: 13px;
+.htimeline-marker {
+  position: absolute;
+  top: 72px;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background-color: #141414;
   border: 2px solid #3a3a3a;
-  transition: border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
-}
-
-.timeline-dot-active {
-  background-color: #f2f2f2;
-  border-color: #f2f2f2;
-  box-shadow: 0 0 0 4px rgba(242, 242, 242, 0.15);
-}
-
-.timeline-content {
-  min-width: 0;
-  opacity: 0.65;
-  transition: opacity 200ms ease;
-}
-
-.timeline-row-active .timeline-content {
-  opacity: 1;
-}
-
-@media (max-width: 600px) {
-  .timeline-line {
-    left: 80px;
-  }
-
-  .timeline-row {
-    grid-template-columns: 56px 24px 1fr;
-    column-gap: 12px;
-  }
-
-  .timeline-time {
-    font-size: 0.72rem;
-  }
-}
-
-.exp-card-header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 0;
-  background: none;
-  border: none;
-  color: inherit;
-  font: inherit;
-  text-align: left;
+  background-color: #141414;
+  padding: 3px;
   cursor: pointer;
+}
+
+.htimeline-marker-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.2);
+}
+
+.htimeline-marker .exp-logo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.htimeline-detail {
+  margin: 28px auto 0;
+  max-width: 640px;
+  text-align: center;
+}
+
+.htimeline-detail-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f2f2f2;
+  margin: 0 0 6px;
+}
+
+.htimeline-detail-meta {
+  font-size: 0.875rem;
+  color: #888;
+  margin: 0 0 18px;
+}
+
+.htimeline-detail .exp-card-bullets {
+  display: inline-flex;
+  text-align: left;
 }
 
 .exp-logo {
@@ -434,43 +524,13 @@ a:hover {
   color: #999;
 }
 
-.exp-card-heading {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-}
-
-.exp-card-title {
-  font-weight: 600;
-  color: #f2f2f2;
-}
-
-.exp-card-company {
-  font-size: 0.875rem;
-  color: #888;
-  margin-top: 2px;
-}
-
-.exp-card-toggle {
-  flex-shrink: 0;
-  width: 24px;
-  text-align: center;
-  font-size: 1.2rem;
-  color: #888;
-}
-
-.exp-card-body {
-  padding: 14px 0 0;
-  color: #cfcfcf;
-}
-
 .exp-card-bullets {
   margin: 0;
   padding-left: 18px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  color: #cfcfcf;
 }
 
 .photo-grid {
