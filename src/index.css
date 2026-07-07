@@ -259,6 +259,14 @@ a:hover {
   margin-bottom: 24px;
 }
 
+.photo-intro p {
+  margin: 0 0 16px;
+}
+
+.photo-intro p:last-child {
+  margin-bottom: 0;
+}
+
 .coming-soon {
   color: #666;
   font-style: italic;
@@ -700,6 +708,59 @@ a:hover {
   background: none;
   border: none;
   padding: 0;
+}
+
+.blog-post-body img {
+  max-width: 100%;
+  border-radius: 12px;
+  display: block;
+  margin: 0 0 20px;
+}
+
+.blog-post-body a {
+  color: var(--accent);
+}
+
+.blog-post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 24px;
+  font-size: 0.9rem;
+}
+
+.blog-post-body th,
+.blog-post-body td {
+  text-align: left;
+  padding: 10px 14px;
+  border: 1px solid #2c2c2c;
+  vertical-align: top;
+}
+
+.blog-post-body th {
+  background-color: #1c1c1c;
+  color: #f2f2f2;
+  font-weight: 600;
+}
+
+.blog-post-body iframe {
+  max-width: 100%;
+  border-radius: 12px;
+  margin: 0 0 20px;
+}
+
+.post-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+  margin: 0 0 32px;
+}
+
+.post-gallery img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 0;
 }
 
 .footer {

@@ -1,6 +1,7 @@
 import { useParams, Link, Navigate } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import rehypeRaw from 'rehype-raw'
 import { getPostBySlug, formatPostDate } from '../lib/posts.js'
 
 export default function BlogPost() {
@@ -18,7 +19,9 @@ export default function BlogPost() {
         <time className="blog-post-date">{formatPostDate(post.date)}</time>
         <h1 className="page-title">{post.title}</h1>
         <div className="blog-post-body">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+            {post.content}
+          </ReactMarkdown>
         </div>
       </article>
     </div>

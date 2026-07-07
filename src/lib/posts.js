@@ -24,7 +24,7 @@ function extractExcerpt(content) {
   const firstBlock = content
     .split(/\n\s*\n/)
     .map((block) => block.trim())
-    .find((block) => block && !block.startsWith('#'))
+    .find((block) => block && !block.startsWith('#') && !block.startsWith('<') && !block.startsWith('|'))
 
   if (!firstBlock) return ''
 
@@ -32,6 +32,7 @@ function extractExcerpt(content) {
     .replace(/^>\s?/gm, '')
     .replace(/[*_`#]/g, '')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/<[^>]+>/g, '')
     .replace(/\s+/g, ' ')
     .trim()
 
