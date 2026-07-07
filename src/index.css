@@ -9,6 +9,8 @@ html, body, #root {
 :root {
   --accent: #f5a623;
   --accent-hover: #f7b84d;
+  --accent-blue: #4f8ff0;
+  --accent-blue-hover: #7aaef5;
 }
 
 body {
@@ -281,50 +283,6 @@ a:hover {
   margin: 0 0 20px;
 }
 
-.education {
-  margin-top: 40px;
-}
-
-.education-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.education-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.education-text {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-  gap: 2px;
-}
-
-.education-school {
-  font-weight: 600;
-  color: #f2f2f2;
-}
-
-.education-degree {
-  color: #aaa;
-  font-size: 0.9rem;
-}
-
-.education-dates {
-  flex-shrink: 0;
-  color: #888;
-  font-size: 0.9rem;
-  white-space: nowrap;
-}
-
 .experience-section {
   margin-top: 56px;
 }
@@ -375,6 +333,35 @@ a:hover {
   font-size: 0.8rem;
   color: #666;
   font-style: italic;
+}
+
+.htimeline-legend {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.htimeline-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.htimeline-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.htimeline-legend-dot-edu {
+  background-color: var(--accent-blue);
+}
+
+.htimeline-legend-dot-work {
+  background-color: var(--accent);
 }
 
 .htimeline-nav {
@@ -431,43 +418,58 @@ a:hover {
 
 .htimeline-track {
   position: relative;
-  height: 118px;
+  height: 226px;
 }
 
 .htimeline-ruler-line {
   position: absolute;
   left: 0;
   right: 0;
-  top: 72px;
+  top: 118px;
   height: 1px;
   background-color: #2c2c2c;
 }
 
 .htimeline-year {
   position: absolute;
-  top: 22px;
+  top: 132px;
   transform: translateX(-50%);
   font-size: 0.8rem;
   color: #888;
   white-space: nowrap;
 }
 
-.htimeline-year-present {
-  color: var(--accent);
-  font-weight: 600;
-}
-
 .htimeline-tick {
   position: absolute;
-  top: 62px;
+  top: 108px;
   width: 1px;
   height: 20px;
   background-color: #3a3a3a;
 }
 
+.htimeline-today-line {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  width: 0;
+  border-left: 2px dashed #555;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.htimeline-today-label {
+  position: absolute;
+  top: 0;
+  transform: translateX(6px);
+  font-size: 0.7rem;
+  font-style: italic;
+  color: #888;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 .htimeline-marker {
   position: absolute;
-  top: 72px;
   z-index: 2;
   transform: translate(-50%, -50%);
   width: 36px;
@@ -479,7 +481,20 @@ a:hover {
   cursor: pointer;
 }
 
-.htimeline-marker-active {
+.htimeline-marker-edu {
+  top: 44px;
+}
+
+.htimeline-marker-edu.htimeline-marker-active {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 4px rgba(79, 143, 240, 0.2);
+}
+
+.htimeline-marker-work {
+  top: 190px;
+}
+
+.htimeline-marker-work.htimeline-marker-active {
   border-color: var(--accent);
   box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.2);
 }
@@ -488,6 +503,24 @@ a:hover {
   width: 100%;
   height: 100%;
   border-radius: 50%;
+}
+
+.htimeline-edu-bar {
+  position: absolute;
+  top: 42px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: rgba(79, 143, 240, 0.4);
+  z-index: 1;
+}
+
+.htimeline-edu-endcap {
+  position: absolute;
+  top: 34px;
+  width: 2px;
+  height: 20px;
+  background-color: var(--accent-blue);
+  z-index: 1;
 }
 
 .htimeline-detail {

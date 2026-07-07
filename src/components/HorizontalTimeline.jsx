@@ -3,27 +3,53 @@ import CompanyLogo from './CompanyLogo.jsx'
 
 const YEAR_WIDTH = 160
 
-export default function HorizontalTimeline({ experiences }) {
-  // Oldest first, left to right — dragging right moves forward through time.
-  const items = useMemo(() => [...experiences].sort((a, b) => a.year - b.year), [experiences])
+function yearFraction(date) {
+  const startOfYear = new Date(date.getFullYear(), 0, 1)
+  const startOfNextYear = new Date(date.getFullYear() + 1, 0, 1)
+  return date.getFullYear() + (date - startOfYear) / (startOfNextYear - startOfYear)
+}
 
-  const startYear = items[0].year
-  const endYear = items[items.length - 1].year + 1
+export default function HorizontalTimeline({ education, experiences }) {
+  const todayFraction = useMemo(() => yearFraction(new Date()), [])
+  const todayLabel = useMemo(
+    () => new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }),
+    [],
+  )
+
+  // Oldest first, left to right — dragging right moves forward through time.
+  // Education entries carry a start/end range (rendered as a duration bar);
+  // work entries are a single point-in-time marker, as before. Both share the
+  // same x-axis, positioned by their start year, so they interleave naturally.
+  const items = useMemo(() => {
+    const edu = education.map((e) => ({ ...e, kind: 'education', posYear: e.startYear }))
+    const work = experiences.map((e) => ({ ...e, kind: 'work', posYear: e.year }))
+    return [...edu, ...work].sort((a, b) => a.posYear - b.posYear)
+  }, [education, experiences])
+
+  const startYear = Math.floor(
+    Math.min(...items.map((i) => i.posYear), todayFraction),
+  )
+  const endYear = Math.ceil(
+    Math.max(...items.map((i) => (i.kind === 'education' ? i.endYear : i.posYear)), todayFraction) + 1,
+  )
 
   // The playhead sits at the horizontal center of the viewport, and the track
   // is padded by that same amount on each side — so the oldest role can be
-  // centered when scrolled all the way left, and "Present" when scrolled all
-  // the way right. Native overflow clamping then keeps you from scrolling past either end.
+  // centered when scrolled all the way left, and the far edge when scrolled
+  // all the way right. Native overflow clamping then keeps you from scrolling past either end.
   const [playheadOffset, setPlayheadOffset] = useState(0)
   const edgePadding = playheadOffset
   const trackWidth = (endYear - startYear) * YEAR_WIDTH + edgePadding * 2
-  const markerX = (exp) => edgePadding + (exp.year - startYear) * YEAR_WIDTH
+  const xForYear = (year) => edgePadding + (year - startYear) * YEAR_WIDTH
+  const markerX = (item) => xForYear(item.posYear)
 
-  const [activeId, setActiveId] = useState(items[0].id)
+  // null activeId means nothing has been selected yet — the view opens
+  // centered on today with no marker highlighted, until the user drags to one.
+  const [activeId, setActiveId] = useState(null)
   const viewportRef = useRef(null)
   const dragState = useRef({ dragging: false, startX: 0, startScroll: 0, moved: false })
   const snapTimer = useRef(null)
-  // True while a goTo()-triggered smooth scroll is in flight, so the scroll
+  // True while a scrollToYear()-triggered smooth scroll is in flight, so the scroll
   // handler doesn't fight it and snap back to the previous position mid-animation.
   const suppressScroll = useRef(false)
 
@@ -31,28 +57,36 @@ export default function HorizontalTimeline({ experiences }) {
     const playheadX = scrollLeft + playheadOffset
     let closest = items[0]
     let minDist = Infinity
-    items.forEach((exp) => {
-      const dist = Math.abs(markerX(exp) - playheadX)
+    items.forEach((item) => {
+      const dist = Math.abs(markerX(item) - playheadX)
       if (dist < minDist) {
         minDist = dist
-        closest = exp
+        closest = item
       }
     })
     return closest
   }
 
-  const goTo = (exp) => {
+  const scrollToYear = (year, activeItemId, { instant = false } = {}) => {
     const vp = viewportRef.current
     if (!vp) return
     suppressScroll.current = true
     clearTimeout(snapTimer.current)
-    vp.scrollTo({ left: markerX(exp) - playheadOffset, behavior: 'smooth' })
-    setActiveId(exp.id)
-    // Safety net for browsers without the `scrollend` event.
-    setTimeout(() => {
-      suppressScroll.current = false
-    }, 500)
+    vp.scrollTo({ left: xForYear(year) - playheadOffset, behavior: instant ? 'auto' : 'smooth' })
+    setActiveId(activeItemId)
+    // Safety net for browsers without the `scrollend` event. A large smooth-scroll
+    // (e.g. the initial jump to today) can outlast a short timeout, so an instant
+    // scroll — which finishes synchronously — gets a much shorter one.
+    setTimeout(
+      () => {
+        suppressScroll.current = false
+      },
+      instant ? 50 : 600,
+    )
   }
+
+  const goTo = (item) => scrollToYear(item.posYear, item.id)
+  const goToToday = (instant) => scrollToYear(todayFraction, null, { instant })
 
   const handleScroll = () => {
     if (suppressScroll.current) return
@@ -85,10 +119,12 @@ export default function HorizontalTimeline({ experiences }) {
     if (playheadOffset === 0) return
     if (!initialized.current) {
       initialized.current = true
-      goTo(items[0])
-    } else {
+      goToToday(true)
+    } else if (active) {
       // Viewport was resized — re-center whatever is currently active.
       goTo(active)
+    } else {
+      goToToday()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playheadOffset])
@@ -166,13 +202,25 @@ export default function HorizontalTimeline({ experiences }) {
     return () => vp.removeEventListener('wheel', onWheel)
   }, [])
 
-  const active = items.find((exp) => exp.id === activeId) ?? items[0]
-  const activeIndex = items.findIndex((exp) => exp.id === active.id)
+  const active = activeId == null ? null : items.find((item) => item.id === activeId)
+  const activeIndex = active ? items.findIndex((item) => item.id === active.id) : -1
 
   const step = (delta) => {
+    if (!active) {
+      const upcoming = items.filter((item) => item.posYear >= todayFraction)
+      const past = items.filter((item) => item.posYear < todayFraction)
+      const next = delta > 0 ? upcoming[0] : past[past.length - 1]
+      if (next) goTo(next)
+      return
+    }
     const next = items[Math.min(items.length - 1, Math.max(0, activeIndex + delta))]
     goTo(next)
   }
+
+  const canStepBack = active ? activeIndex > 0 : items.some((item) => item.posYear < todayFraction)
+  const canStepForward = active
+    ? activeIndex < items.length - 1
+    : items.some((item) => item.posYear >= todayFraction)
 
   const years = []
   for (let y = startYear; y <= endYear; y++) years.push(y)
@@ -180,22 +228,22 @@ export default function HorizontalTimeline({ experiences }) {
   return (
     <div className="htimeline">
       <div className="htimeline-controls">
+        <div className="htimeline-legend">
+          <span className="htimeline-legend-item">
+            <span className="htimeline-legend-dot htimeline-legend-dot-edu" />
+            Education
+          </span>
+          <span className="htimeline-legend-item">
+            <span className="htimeline-legend-dot htimeline-legend-dot-work" />
+            Work experience
+          </span>
+        </div>
         <span className="htimeline-hint">Drag to explore</span>
         <div className="htimeline-nav">
-          <button
-            type="button"
-            onClick={() => step(-1)}
-            disabled={activeIndex === 0}
-            aria-label="Previous role"
-          >
+          <button type="button" onClick={() => step(-1)} disabled={!canStepBack} aria-label="Previous">
             ←
           </button>
-          <button
-            type="button"
-            onClick={() => step(1)}
-            disabled={activeIndex === items.length - 1}
-            aria-label="Next role"
-          >
+          <button type="button" onClick={() => step(1)} disabled={!canStepForward} aria-label="Next">
             →
           </button>
         </div>
@@ -216,12 +264,8 @@ export default function HorizontalTimeline({ experiences }) {
             <div className="htimeline-ruler-line" />
 
             {years.map((y) => (
-              <div
-                key={y}
-                className={y === endYear ? 'htimeline-year htimeline-year-present' : 'htimeline-year'}
-                style={{ left: edgePadding + (y - startYear) * YEAR_WIDTH }}
-              >
-                {y === endYear ? 'Present' : y}
+              <div key={y} className="htimeline-year" style={{ left: xForYear(y) }}>
+                {y}
               </div>
             ))}
 
@@ -230,36 +274,83 @@ export default function HorizontalTimeline({ experiences }) {
                 <div
                   key={`${y}-${q}`}
                   className="htimeline-tick"
-                  style={{ left: edgePadding + (y - startYear) * YEAR_WIDTH + q * (YEAR_WIDTH / 4) }}
+                  style={{ left: xForYear(y) + q * (YEAR_WIDTH / 4) }}
                 />
               )),
             )}
 
-            {items.map((exp) => (
-              <button
-                key={exp.id}
-                type="button"
-                className={exp.id === activeId ? 'htimeline-marker htimeline-marker-active' : 'htimeline-marker'}
-                style={{ left: markerX(exp) }}
-                onClick={() => goTo(exp)}
-              >
-                <CompanyLogo company={exp.company} logo={exp.logo} />
-              </button>
-            ))}
+            <div className="htimeline-today-line" style={{ left: xForYear(todayFraction) }} />
+            <div className="htimeline-today-label" style={{ left: xForYear(todayFraction) }}>
+              Today
+            </div>
+
+            {items
+              .filter((item) => item.kind === 'education')
+              .map((edu) => (
+                <div key={edu.id}>
+                  <div
+                    className="htimeline-edu-bar"
+                    style={{ left: markerX(edu), width: Math.max(0, xForYear(edu.endYear) - markerX(edu)) }}
+                  />
+                  <div className="htimeline-edu-endcap" style={{ left: xForYear(edu.endYear) }} />
+                  <button
+                    type="button"
+                    className={
+                      edu.id === activeId
+                        ? 'htimeline-marker htimeline-marker-edu htimeline-marker-active'
+                        : 'htimeline-marker htimeline-marker-edu'
+                    }
+                    style={{ left: markerX(edu) }}
+                    onClick={() => goTo(edu)}
+                  >
+                    <CompanyLogo company={edu.school} logo={edu.logo} />
+                  </button>
+                </div>
+              ))}
+
+            {items
+              .filter((item) => item.kind === 'work')
+              .map((exp) => (
+                <button
+                  key={exp.id}
+                  type="button"
+                  className={
+                    exp.id === activeId
+                      ? 'htimeline-marker htimeline-marker-work htimeline-marker-active'
+                      : 'htimeline-marker htimeline-marker-work'
+                  }
+                  style={{ left: markerX(exp) }}
+                  onClick={() => goTo(exp)}
+                >
+                  <CompanyLogo company={exp.company} logo={exp.logo} />
+                </button>
+              ))}
           </div>
         </div>
       </div>
 
       <div className="htimeline-detail">
-        <h3 className="htimeline-detail-title">{active.title}</h3>
-        <p className="htimeline-detail-meta">
-          {active.company} · {active.dateRange}
-        </p>
-        <ul className="exp-card-bullets">
-          {active.description.map((bullet, i) => (
-            <li key={i}>{bullet}</li>
-          ))}
-        </ul>
+        {active ? (
+          <>
+            <h3 className="htimeline-detail-title">{active.kind === 'education' ? active.degree : active.title}</h3>
+            <p className="htimeline-detail-meta">
+              {active.kind === 'education' ? active.school : active.company} ·{' '}
+              {active.kind === 'education' ? active.dates : active.dateRange}
+            </p>
+            {active.description && (
+              <ul className="exp-card-bullets">
+                {active.description.map((bullet, i) => (
+                  <li key={i}>{bullet}</li>
+                ))}
+              </ul>
+            )}
+          </>
+        ) : (
+          <>
+            <h3 className="htimeline-detail-title">Today</h3>
+            <p className="htimeline-detail-meta">{todayLabel}</p>
+          </>
+        )}
       </div>
     </div>
   )

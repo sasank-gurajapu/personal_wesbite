@@ -3,21 +3,21 @@ export const SUMMARY =
 
 export const EDUCATION = [
   {
-    school: 'Columbia Business School',
-    degree: 'MBA, Technology & Product Management',
-    dates: '2025 – Present',
+    id: 'columbia',
+    school: 'Columbia Business School & SEAS',
+    degree: 'Dual MBA/MS, Technology & Product Management + Machine Learning & AI',
+    dates: '2025 – May 2027',
+    startYear: 2025,
+    endYear: 2027 + 4 / 12,
     logo: '/logos/columbia-business-school.png',
   },
   {
-    school: 'Columbia School of Engineering and Applied Science',
-    degree: 'MS, Engineering, Machine Learning and Artificial Intelligence',
-    dates: '2025 – Present',
-    logo: '/logos/columbia-seas.png',
-  },
-  {
+    id: 'iit-guwahati',
     school: 'Indian Institute of Technology Guwahati',
     degree: 'B.Tech, Electronics and Electrical Engineering; Minor: Product Design',
     dates: '2015 – 2019',
+    startYear: 2015,
+    endYear: 2019,
     logo: '/logos/iit-guwahati.png',
   },
 ]
