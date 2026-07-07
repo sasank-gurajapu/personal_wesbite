@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import CompanyLogo from './CompanyLogo.jsx'
 
 const YEAR_WIDTH = 160
@@ -47,7 +48,7 @@ export default function HorizontalTimeline({ education, experiences }) {
   // centered on today with no marker highlighted, until the user drags to one.
   const [activeId, setActiveId] = useState(null)
   const viewportRef = useRef(null)
-  const dragState = useRef({ dragging: false, startX: 0, startScroll: 0, moved: false })
+  const dragState = useRef({})
   const snapTimer = useRef(null)
   // True while a scrollToYear()-triggered smooth scroll is in flight, so the scroll
   // handler doesn't fight it and snap back to the previous position mid-animation.
@@ -183,15 +184,27 @@ export default function HorizontalTimeline({ education, experiences }) {
     }
   }
 
-  // Plain vertical wheel/trackpad scroll also scrubs the timeline, so it isn't
-  // drag-only — but let the page scroll normally once you hit either end.
+  // Horizontal wheel/trackpad gestures (shift+wheel, two-finger side swipe)
+  // scrub the timeline — but plain vertical scrolling is left alone so the
+  // page scrolls normally while the cursor passes over the component.
   // React's synthetic onWheel is attached passively, so preventDefault() there
   // is silently ignored; a native listener is required to actually block it.
   useEffect(() => {
     const vp = viewportRef.current
     if (!vp) return
     const onWheel = (e) => {
-      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) {
+        // Chromium/WebKit redirect vertical wheel input into horizontal
+        // scroll on any element that's x-scrollable but not y-scrollable
+        // (which this viewport is, by design). Left uncorrected, that
+        // native behavior hijacks ordinary page scrolling the moment the
+        // cursor passes over the timeline — so it's overridden here and
+        // forwarded to the page manually.
+        e.preventDefault()
+        window.scrollBy(0, e.deltaY)
+        return
+      }
+      const delta = e.deltaX
       const atStart = vp.scrollLeft <= 0 && delta < 0
       const atEnd = vp.scrollLeft >= vp.scrollWidth - vp.clientWidth - 1 && delta > 0
       if (atStart || atEnd) return
@@ -337,18 +350,29 @@ export default function HorizontalTimeline({ education, experiences }) {
               {active.kind === 'education' ? active.school : active.company} ·{' '}
               {active.kind === 'education' ? active.dates : active.dateRange}
             </p>
-            {active.description && (
-              <ul className="exp-card-bullets">
-                {active.description.map((bullet, i) => (
-                  <li key={i}>{bullet}</li>
-                ))}
-              </ul>
-            )}
+            <div className="htimeline-detail-body">
+              {active.description && (
+                <ul className="exp-card-bullets">
+                  {active.description.map((bullet, i) => (
+                    <li key={i}>{bullet}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div className="htimeline-deepdive-row">
+              {active.deepDive && (
+                <Link to={`/professional-life/deepdive/${active.deepDive}`} className="htimeline-deepdive-cta">
+                  Deep dive →
+                </Link>
+              )}
+            </div>
           </>
         ) : (
           <>
             <h3 className="htimeline-detail-title">Today</h3>
             <p className="htimeline-detail-meta">{todayLabel}</p>
+            <div className="htimeline-detail-body" />
+            <div className="htimeline-deepdive-row" />
           </>
         )}
       </div>

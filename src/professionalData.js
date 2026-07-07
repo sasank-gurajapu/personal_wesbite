@@ -54,6 +54,7 @@ export const EXPERIENCES = [
     dateRange: '2023 – 2024',
     year: 2023,
     logo: '/logos/cay.png',
+    deepDive: 'cay',
     description: [
       'Drove full product lifecycle from 0-1, designing prototypes informed by 50+ customer interviews, collaborating with the CTO on UI/UX implementation to address eCommerce collaboration pain points and validate product-market fit.',
       'Designed a cross-promotion plugin on Shopify enabling 25+ D2C brands (incl. Shark Tank startups) across 2,000+ daily orders to acquire customers at an 11% CTR — 50% higher than Meta/Google ads.',
@@ -67,6 +68,7 @@ export const EXPERIENCES = [
     dateRange: '2021 – 2023',
     year: 2021,
     logo: '/logos/postman.png',
+    deepDive: 'postman-all-initiatives',
     description: [
       'Proposed a data-driven pricing transformation from flat enterprise licenses to feature-based add-ons through cross-functional alignment with Sales, Product, and Revenue Operations leadership, generating $10M+ revenue increase.',
       'Delivered flexible licensing architecture with billing engineering and legal teams, replacing contract-based changes with self-service license management and capturing $5M+ additional revenue from 50+ enterprise customers.',
@@ -80,8 +82,46 @@ export const EXPERIENCES = [
     dateRange: '2019 – 2021',
     year: 2019,
     logo: '/logos/deloitte.png',
+    deepDive: 'deloitte-usi',
     description: [
       'Scoped a $3M AWS migration (1,000+ servers) for a US FinTech client and led 50+ enterprise app migrations for a US bank, earning 6 awards.',
     ],
+  },
+]
+
+export const SIDE_PROJECTS = [
+  {
+    id: 'wire',
+    title: 'Wire',
+    blurb: 'A Shopify app for digital downloads — ★5 rated on the Shopify App Store.',
+    deepDive: 'wire',
+  },
+  {
+    id: 'job-project',
+    title: 'The Job Project',
+    blurb: 'A talent directory exclusive to IIT Guwahati — 5K MAU and 100+ job referrals within a month.',
+    href: 'https://www.linkedin.com/company/the-job-project-iit-guwahati-talent-directory/about/?viewAsMember=true',
+  },
+  {
+    id: 'responsible-step',
+    title: 'Responsible Step',
+    blurb:
+      'A social-agreement system design proposal submitted to India’s "Innovate COVID-19" initiative for containing pandemic spread in urban areas.',
+    href: 'https://docs.google.com/presentation/d/1J707SLcFzEJofYkkxCaf1SbHwGFK9yTGJaCd1nx49M4/edit?usp=sharing',
+  },
+  {
+    id: 'survey-aggregator',
+    title: 'Decentralised Survey Aggregator',
+    blurb: 'An Ethereum + IPFS survey platform for secure data and transactions, built at EthIndia 2018.',
+    href: 'https://devfolio.co/projects/thissurvey',
+  },
+]
+
+export const PUBLICATIONS = [
+  {
+    id: 'softcom-2019',
+    title: 'Spectrum Allocation and Power Management using Markov Chains and Beamforming in Underlay Cognitive Radios',
+    venue: 'Softcom 2019, Croatia',
+    href: 'https://ieeexplore.ieee.org/document/8903786',
   },
 ]

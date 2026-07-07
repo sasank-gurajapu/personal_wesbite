@@ -3,13 +3,11 @@ import { SECTIONS } from '../data.js'
 
 export default function SectionNav() {
   return (
-    <nav className="section-list">
+    <nav className="section-grid">
       {SECTIONS.map((section) => (
-        <Link key={section.path} to={section.path} className="section-row">
-          <span className="section-text">
-            <span className="section-title">{section.label}</span>
-            <span className="section-subtitle">{section.subtitle}</span>
-          </span>
+        <Link key={section.path} to={section.path} className="section-card">
+          <span className="section-title">{section.label}</span>
+          <span className="section-subtitle">{section.subtitle}</span>
           <span className="section-arrow">→</span>
         </Link>
       ))}
