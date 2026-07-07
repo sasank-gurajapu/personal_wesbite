@@ -4,6 +4,7 @@ import SubpageLayout from './components/SubpageLayout.jsx'
 import Home from './pages/Home.jsx'
 import ProfessionalLife from './pages/ProfessionalLife.jsx'
 import ThoughtsAndMore from './pages/ThoughtsAndMore.jsx'
+import BlogPost from './pages/BlogPost.jsx'
 import Photos from './pages/Photos.jsx'
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
             <Route element={<SubpageLayout />}>
               <Route path="/professional-life" element={<ProfessionalLife />} />
               <Route path="/thoughts-and-more" element={<ThoughtsAndMore />} />
+              <Route path="/thoughts-and-more/:slug" element={<BlogPost />} />
               <Route path="/photos" element={<Photos />} />
             </Route>
           </Routes>
