@@ -16,8 +16,8 @@ export default function App() {
       <div className="page">
         <main className="main">
           <Routes>
-            <Route path="/" element={<Home />} />
             <Route element={<SubpageLayout />}>
+              <Route path="/" element={<Home />} />
               <Route path="/professional-life" element={<ProfessionalLife />} />
               <Route path="/professional-life/deepdive/:slug" element={<DeepDive />} />
               <Route path="/thoughts-and-more" element={<ThoughtsAndMore />} />
