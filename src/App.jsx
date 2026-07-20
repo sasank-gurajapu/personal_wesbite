@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Footer from './components/Footer.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
+import ImageProtection from './components/ImageProtection.jsx'
 import SubpageLayout from './components/SubpageLayout.jsx'
 import Home from './pages/Home.jsx'
 import ProfessionalLife from './pages/ProfessionalLife.jsx'
@@ -13,6 +14,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <ImageProtection />
       <div className="page">
         <main className="main">
           <Routes>

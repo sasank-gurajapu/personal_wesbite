@@ -6,6 +6,13 @@ html, body, #root {
   height: 100%;
 }
 
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
 :root {
   --accent-blue: #1f3a8a;
   --accent-blue-hover: #34519f;
